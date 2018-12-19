@@ -9,8 +9,6 @@ if (process.env.NODE_ENV !== 'production') {
 	require('dotenv/config');
 }
 
-console.log(process.env.DATABASE, process.env.DATABASE_USER, process.env.NODE_ENV);
-
 const { users, messages } = require('./mocks');
 
 const { sequelize } = require('./models');

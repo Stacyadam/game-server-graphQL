@@ -19,9 +19,7 @@ Object.keys(models).forEach(key => {
 	}
 });
 
-//stacy:Sakboy$%40410@localhost/postgres
-
-postgresql: module.exports = {
+module.exports = {
 	models,
 	sequelize
 };
