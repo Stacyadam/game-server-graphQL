@@ -30,6 +30,6 @@ const port = process.env.PORT || 8000;
 
 sequelize.sync().then(async () => {
 	app.listen({ port }, () => {
-		console.log(`Apollo Server running on port ${port}/graphql`);
+		console.log(`🚀 Server ready at http://localhost:${port}${server.graphqlPath}`);
 	});
 });
