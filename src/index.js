@@ -5,9 +5,16 @@ const { ApolloServer } = require('apollo-server-express');
 const schema = require('./Schemas');
 const resolvers = require('./Resolvers');
 
+if (process.env.NODE_ENV !== 'production') {
+	require('dotenv/config');
+}
+
+console.log(process.env.DATABASE, process.env.DATABASE_USER, process.env.NODE_ENV);
+
 const { users, messages } = require('./mocks');
-require('./models');
+
 const { sequelize } = require('./models');
+require('./models');
 
 const app = express();
 

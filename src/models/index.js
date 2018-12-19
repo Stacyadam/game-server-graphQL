@@ -1,7 +1,11 @@
 const Sequelize = require('sequelize');
 
 const sequelize = new Sequelize(process.env.DATABASE, process.env.DATABASE_USER, process.env.DATABASE_PASSWORD, {
-	dialect: 'postgres'
+	host: 'ec2-54-204-46-60.compute-1.amazonaws.com',
+	dialect: 'postgres',
+	dialectOptions: {
+		ssl: true
+	}
 });
 
 const models = {
@@ -15,7 +19,9 @@ Object.keys(models).forEach(key => {
 	}
 });
 
-module.exports = {
+//stacy:Sakboy$%40410@localhost/postgres
+
+postgresql: module.exports = {
 	models,
 	sequelize
 };
