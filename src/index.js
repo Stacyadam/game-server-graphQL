@@ -9,10 +9,7 @@ if (process.env.NODE_ENV !== 'production') {
 	require('dotenv/config');
 }
 
-const { users, messages } = require('./mocks');
-
-const { sequelize } = require('./models');
-require('./models');
+const { sequelize, models } = require('./models');
 
 const app = express();
 
@@ -21,11 +18,10 @@ app.use(cors());
 const server = new ApolloServer({
 	typeDefs: schema,
 	resolvers,
-	context: {
-		users,
-		messages,
-		me: users[1]
-	}
+	context: async () => ({
+		models,
+		me: await models.User.findByLogin('rwieruch')
+	})
 });
 
 server.applyMiddleware({ app, path: '/graphql' });

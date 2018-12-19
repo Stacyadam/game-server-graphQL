@@ -1,59 +1,37 @@
-const uuidv4 = require('uuid/v4');
-
 module.exports = {
 	Query: {
-		messages: (parent, args, { messages }) => {
-			return Object.values(messages);
+		messages: async (parent, args, { models }) => {
+			return await models.Message.findAll();
 		},
-		message: (parent, args, { messages }) => {
+		message: async (parent, args, { models }) => {
 			const { id } = args;
-			return messages[id];
+			return await models.Message.findById(id);
 		}
 	},
 
 	Mutation: {
-		createMessage: (parent, args, { me }) => {
+		createMessage: async (parent, args, { models, me }) => {
 			const { text } = args;
-			const id = uuidv4();
-
-			const message = {
-				id,
+			return await models.Message.create({
 				text,
 				userId: me.id
-			};
-
-			messages[id] = message;
-			users[me.id].messageIds.push(id);
-
-			return message;
+			});
 		},
 
-		deleteMessage: (parent, args, { messages }) => {
+		deleteMessage: async (parent, args, { models }) => {
 			const { id } = args;
-			const { [id]: message, ...otherMessages } = messages;
-
-			if (!message) {
-				return false;
-			}
-
-			messages = otherMessages;
-
-			return true;
+			return await models.Message.destroy({ where: { id } });
 		},
 
-		updateMessage: (parent, args, { messages }) => {
+		updateMessage: async (parent, args, { models }) => {
 			const { id, text } = args;
-			const { [id]: message } = messages;
-
-			message.text = text;
-
-			return message;
+			return await models.Message.update({ text }, { where: { id } });
 		}
 	},
 
 	Message: {
-		user: (message, args, { users }) => {
-			return users[message.userId];
+		user: async (message, args, { models }) => {
+			return await models.User.findById(message.userId);
 		}
 	}
 };
