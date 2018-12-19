@@ -6,6 +6,8 @@ const schema = require('./Schemas');
 const resolvers = require('./Resolvers');
 
 const { users, messages } = require('./mocks');
+require('./models');
+const { sequelize } = require('./models');
 
 const app = express();
 
@@ -25,6 +27,8 @@ server.applyMiddleware({ app, path: '/graphql' });
 
 const port = process.env.PORT || 8000;
 
-app.listen({ port }, () => {
-	console.log(`Apollo Server running on port ${port}/graphql`);
+sequelize.sync().then(async () => {
+	app.listen({ port }, () => {
+		console.log(`Apollo Server running on port ${port}/graphql`);
+	});
 });
