@@ -20,5 +20,6 @@ module.exports = gql`
 		username: String!
 		email: String!
 		characters: [Character!]
+		role: String!
 	}
 `;

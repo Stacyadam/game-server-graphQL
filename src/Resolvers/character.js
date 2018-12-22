@@ -1,11 +1,11 @@
 const { combineResolvers } = require('graphql-resolvers');
-const { isAuthenticated, isCharacterOwner } = require('./authorization');
+const { isAuthenticated, isCharacterOwner, isAdmin } = require('./authorization');
 
 module.exports = {
 	Query: {
-		characters: (parent, args, { models }) => {
+		characters: combineResolvers(isAdmin, (parent, args, { models }) => {
 			return models.Character.findAll();
-		},
+		}),
 		character: (parent, args, { models }) => {
 			const { id } = args;
 			return models.Character.findById(id);
