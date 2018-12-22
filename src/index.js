@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const { ApolloServer } = require('apollo-server-express');
+const { ApolloServer, AuthenticationError } = require('apollo-server-express');
+const jwt = require('jsonwebtoken');
 
 const schema = require('./Schemas');
 const resolvers = require('./Resolvers');
@@ -15,6 +16,18 @@ const app = express();
 
 app.use(cors());
 
+const getMe = async req => {
+	const token = req.headers['x-token'];
+
+	if (token) {
+		try {
+			return await jwt.verify(token, process.env.SECRET);
+		} catch (error) {
+			throw new AuthenticationError('Your session has expired. Please sign in again.');
+		}
+	}
+};
+
 const server = new ApolloServer({
 	typeDefs: schema,
 	resolvers,
@@ -26,11 +39,15 @@ const server = new ApolloServer({
 			message
 		};
 	},
-	context: async () => ({
-		models,
-		me: await models.User.findByLogin('rwieruch'),
-		secret: process.env.SECRET
-	})
+	context: async ({ req }) => {
+		const me = await getMe(req);
+
+		return {
+			models,
+			me,
+			secret: process.env.SECRET
+		};
+	}
 });
 
 server.applyMiddleware({ app });
@@ -45,6 +62,7 @@ const createUsersWithMessages = async () => {
 			username: 'rwieruch',
 			email: 'hello@robin.com',
 			password: 'rwieruch',
+			role: 'ADMIN',
 			messages: [
 				{
 					text: 'Published the Road to learn React'
