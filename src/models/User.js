@@ -29,11 +29,12 @@ module.exports = (sequelize, DataTypes) => {
 				notEmpty: true,
 				len: [7, 42]
 			}
-		},
-		role: {
-			type: DataTypes.STRING
 		}
 	});
+
+	User.associate = models => {
+		User.hasMany(models.Character, { onDelete: 'CASCADE' });
+	};
 
 	User.beforeCreate(async user => {
 		user.password = await user.generatePasswordHash();
@@ -46,10 +47,6 @@ module.exports = (sequelize, DataTypes) => {
 
 	User.prototype.validatePassword = async function(password) {
 		return await bcrypt.compare(password, this.password);
-	};
-
-	User.associate = models => {
-		User.hasMany(models.Message, { onDelete: 'CASCADE' });
 	};
 
 	User.findByLogin = async login => {

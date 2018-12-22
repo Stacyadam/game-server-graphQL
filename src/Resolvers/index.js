@@ -1,4 +1,4 @@
 const userResolvers = require('./user');
-const messageResolvers = require('./message');
+const characterResolvers = require('./character');
 
-module.exports = [userResolvers, messageResolvers];
+module.exports = [userResolvers, characterResolvers];

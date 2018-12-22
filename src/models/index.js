@@ -10,7 +10,7 @@ const sequelize = new Sequelize(process.env.DATABASE, process.env.DATABASE_USER,
 
 const models = {
 	User: sequelize.import('./User'),
-	Message: sequelize.import('./Message')
+	Character: sequelize.import('./Character')
 };
 
 Object.keys(models).forEach(key => {

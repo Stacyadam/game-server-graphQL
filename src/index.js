@@ -17,7 +17,7 @@ const app = express();
 app.use(cors());
 
 const getMe = async req => {
-	const token = req.headers['x-token'];
+	const token = req.headers.authentication.replace('Bearer ', '');
 
 	if (token) {
 		try {
@@ -54,51 +54,7 @@ server.applyMiddleware({ app });
 
 const port = process.env.PORT || 8000;
 
-const runSeedData = true;
-
-const createUsersWithMessages = async () => {
-	await models.User.create(
-		{
-			username: 'rwieruch',
-			email: 'hello@robin.com',
-			password: 'rwieruch',
-			role: 'ADMIN',
-			messages: [
-				{
-					text: 'Published the Road to learn React'
-				}
-			]
-		},
-		{
-			include: [models.Message]
-		}
-	);
-
-	await models.User.create(
-		{
-			username: 'ddavids',
-			email: 'hello@david.com',
-			password: 'ddavids',
-			messages: [
-				{
-					text: 'Happy to release ...'
-				},
-				{
-					text: 'Published a complete ...'
-				}
-			]
-		},
-		{
-			include: [models.Message]
-		}
-	);
-};
-
-sequelize.sync({ force: runSeedData }).then(async () => {
-	if (runSeedData) {
-		createUsersWithMessages();
-	}
-
+sequelize.sync().then(() => {
 	app.listen({ port }, () => {
 		console.log(`🚀 Server ready at http://localhost:${port}${server.graphqlPath}`);
 	});
