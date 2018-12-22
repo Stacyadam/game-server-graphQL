@@ -4,7 +4,9 @@ module.exports = (sequelize, DataTypes) => {
 	const User = sequelize.define('user', {
 		username: {
 			type: DataTypes.STRING,
-			unique: true,
+			unique: {
+				msg: 'Username already exists.'
+			},
 			allowNull: false,
 			validate: {
 				notEmpty: {
@@ -15,7 +17,9 @@ module.exports = (sequelize, DataTypes) => {
 		},
 		email: {
 			type: DataTypes.STRING,
-			unique: true,
+			unique: {
+				msg: 'Email already exists.'
+			},
 			allowNull: false,
 			validate: {
 				notEmpty: true,
