@@ -31,14 +31,6 @@ const getMe = async req => {
 const server = new ApolloServer({
 	typeDefs: schema,
 	resolvers,
-	formatError: error => {
-		const message = error.message.replace('SequeilzeValdationError: ', '').replace('Validation error: ', '');
-
-		return {
-			...error,
-			message
-		};
-	},
 	context: async ({ req }) => {
 		const me = await getMe(req);
 
@@ -47,7 +39,18 @@ const server = new ApolloServer({
 			me,
 			secret: process.env.SECRET
 		};
-	}
+	},
+	formatError: error => {
+		const message = error.message.replace('SequeilzeValdationError: ', '').replace('Validation error: ', '');
+
+		return {
+			...error,
+			message
+		};
+	},
+	//enable GraphQL playground in production
+	introspection: true,
+	playground: true
 });
 
 server.applyMiddleware({ app });
