@@ -13,6 +13,7 @@ module.exports = {
 
 	Mutation: {
 		createMessage: async (parent, { text }, { me, models }) => {
+			console.log('this is me', me);
 			return await models.Message.create({
 				text,
 				userId: me.id

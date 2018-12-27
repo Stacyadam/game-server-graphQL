@@ -14,6 +14,7 @@ module.exports = {
 
 	Mutation: {
 		createCharacter: combineResolvers(isAuthenticated, (parent, args, { models, me }) => {
+			console.log('this is me', me);
 			const { name, race } = args;
 			return models.Character.create({
 				name,
