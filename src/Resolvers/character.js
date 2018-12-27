@@ -6,10 +6,10 @@ module.exports = {
 		characters: combineResolvers(isAdmin, (parent, args, { models }) => {
 			return models.Character.findAll();
 		}),
-		character: (parent, args, { models }) => {
+		character: combineResolvers(isAuthenticated, (parent, args, { models }) => {
 			const { id } = args;
 			return models.Character.findById(id);
-		}
+		})
 	},
 
 	Mutation: {

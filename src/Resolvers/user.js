@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { UserInputError } = require('apollo-server');
+const { combineResolvers } = require('graphql-resolvers');
+const { isAuthenticated, isAdmin } = require('./authorization');
 
 const createToken = async (user, secret, expiresIn) => {
 	const { id, email, username, role } = user;
@@ -8,9 +10,9 @@ const createToken = async (user, secret, expiresIn) => {
 
 module.exports = {
 	Query: {
-		users: (parent, args, { models }) => {
+		users: combineResolvers(isAdmin, (parent, args, { models }) => {
 			return models.User.findAll();
-		},
+		}),
 		user: (parent, args, { models }) => {
 			const { id } = args;
 			return models.User.findById(id);
