@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { ApolloServer, AuthenticationError } = require('apollo-server-express');
+const http = require('http');
 const jwt = require('jsonwebtoken');
 
 const schema = require('./Schemas');
@@ -32,14 +33,21 @@ const getMe = async req => {
 const server = new ApolloServer({
 	typeDefs: schema,
 	resolvers,
-	context: async ({ req }) => {
-		const me = await getMe(req);
+	context: async ({ req, connection }) => {
+		if (connection) {
+			return {
+				models
+			};
+		}
+		if (req) {
+			const me = await getMe(req);
 
-		return {
-			models,
-			me,
-			secret: process.env.SECRET
-		};
+			return {
+				models,
+				me,
+				secret: process.env.SECRET
+			};
+		}
 	},
 	formatError: error => {
 		const message = error.message.replace('SequeilzeValdationError: ', '').replace('Validation error: ', '');
@@ -56,10 +64,13 @@ const server = new ApolloServer({
 
 server.applyMiddleware({ app });
 
+const httpServer = http.createServer(app);
+server.installSubscriptionHandlers(httpServer);
+
 const port = process.env.PORT || 8000;
 
 sequelize.sync().then(() => {
-	app.listen({ port }, () => {
-		console.log(`🚀 Server ready at http://localhost:${port}${server.graphqlPath}`);
+	httpServer.listen({ port }, () => {
+		console.log(`Apollo Server on http://localhost:${port}/graphql`);
 	});
 });

@@ -1,5 +1,7 @@
 const { combineResolvers } = require('graphql-resolvers');
-const { isAuthenticated, isCharacterOwner, isAdmin } = require('./authorization');
+const { isAuthenticated } = require('./authorization');
+const pubsub = require('../subscription');
+const { EVENTS } = require('../subscription');
 
 module.exports = {
 	Query: {
@@ -12,13 +14,17 @@ module.exports = {
 	},
 
 	Mutation: {
-		createMessage: async (parent, { text }, { me, models }) => {
-			console.log('this is me', me);
-			return await models.Message.create({
+		createMessage: combineResolvers(isAuthenticated, async (parent, { text }, { me, models }) => {
+			const message = await models.Message.create({
 				text,
 				userId: me.id
 			});
-		},
+
+			pubsub.publish('CREATED', {
+				messageCreated: { message }
+			});
+			return message;
+		}),
 
 		deleteMessage: async (parent, { id }, { models }) => {
 			return await models.Message.destroy({ where: { id } });
@@ -28,6 +34,12 @@ module.exports = {
 	Message: {
 		user: async (message, args, { models }) => {
 			return await models.User.findById(message.userId);
+		}
+	},
+
+	Subscription: {
+		messageCreated: {
+			subscribe: () => pubsub.asyncIterator('CREATED')
 		}
 	}
 };
