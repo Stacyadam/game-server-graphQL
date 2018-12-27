@@ -6,9 +6,11 @@ module.exports = {
 		characters: combineResolvers(isAdmin, (parent, args, { models }) => {
 			return models.Character.findAll();
 		}),
-		character: combineResolvers(isAuthenticated, isCharacterOwner, (parent, args, { models, me }) => {
-			const { id } = args;
-			return models.Character.findById(id);
+		character: combineResolvers(isAuthenticated, async (parent, args, { models }) => {
+			const { name } = args;
+			const character = await models.Character.findOne({ where: { name } });
+			if (!character) throw new Error('Character not found.');
+			return character;
 		})
 	},
 
