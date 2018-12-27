@@ -56,6 +56,13 @@ module.exports = {
 					userId: user.id
 				}
 			});
+		},
+		messages: async (user, args, { models }) => {
+			return await models.Message.findAll({
+				where: {
+					userId: user.id
+				}
+			});
 		}
 	}
 };

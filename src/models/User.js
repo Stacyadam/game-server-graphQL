@@ -42,6 +42,7 @@ module.exports = (sequelize, DataTypes) => {
 
 	User.associate = models => {
 		User.hasMany(models.Character, { onDelete: 'CASCADE' });
+		User.hasMany(models.Message, { onDelete: 'CASCADE' });
 	};
 
 	User.beforeCreate(async user => {
